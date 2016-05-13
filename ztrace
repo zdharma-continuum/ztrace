@@ -287,7 +287,7 @@ while (( 1 )); do
 
     if [ "$REPLY" = "LEAVE" ]; then
         (( active_window = 2 + ((active_window-2 +1) % 2) ))
-    elif [[ ("$REPLY" = "MOVE_LEFT" || $REPLY = "MOVE_RIGHT") && "$active_window" = 0 ]]; then
+    elif [[ ("$REPLY" = "MOVE_LEFT" || $REPLY = "MOVE_RIGHT") && "$active_window" = 2 ]]; then
         #
         # Shift + cursor key - move existing element
         #
@@ -299,22 +299,26 @@ while (( 1 )); do
 
         if [ "$REPLY" = "MOVE_LEFT" ]; then
             if [ "$HLIST_CURRENT_SEGMENT" -gt "1" ]; then
+                _ztrace_retrieve_list_state 2
                 local dest="$tmp[HLIST_CURRENT_SEGMENT-1]"
                 tmp[HLIST_CURRENT_SEGMENT-1]="$tmp[HLIST_CURRENT_SEGMENT]";
                 tmp[HLIST_CURRENT_SEGMENT]="$dest"
                 list1[1]="${(j: :)tmp}"
                 (( HLIST_CURRENT_SEGMENT -- ))
+                _ztrace_save_list_state 2
 
                 # Remember for undo
                 undolist=( "$list1[1]" "$undolist[@]" )
             fi
         elif [ "$REPLY" = "MOVE_RIGHT" ]; then
             if [ "$HLIST_CURRENT_SEGMENT" -lt "$nseg" ]; then
+                _ztrace_retrieve_list_state 2
                 local dest="$tmp[HLIST_CURRENT_SEGMENT+1]"
                 tmp[HLIST_CURRENT_SEGMENT+1]="$tmp[HLIST_CURRENT_SEGMENT]";
                 tmp[HLIST_CURRENT_SEGMENT]="$dest"
                 list1[1]="${(j: :)tmp}"
                 (( HLIST_CURRENT_SEGMENT ++ ))
+                _ztrace_save_list_state 2
 
                 # Remember for undo
                 undolist=( "$list1[1]" "$undolist[@]" )
@@ -384,14 +388,14 @@ while (( 1 )); do
             # Here is where add or remove logic operates
             #
 
-            if [ "$active_window" = "0" ]; then
+            if [ "$active_window" = "2" ]; then
                 # Delete of segment
                 tmp[cur_seg]=()
                 list1[1]="${(j: :)tmp}"
 
                 # Remember for undo
                 undolist=( "$list1[1]" "$undolist[@]" )
-            elif [ "$active_window" = "1" ]; then
+            elif [ "$active_window" = "3" ]; then
                 # Addition of segment
                 [ -z "$list1[1]" ] && list1[1]="$answer" || list1[1]="$list1[1] $answer"
 
