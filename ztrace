@@ -91,11 +91,7 @@ _ztrace_alternate_screen() {
     esac
 }
 
-_ztrace_switch_lists_states() {
-    # First argument is previous-active list
-    # Second argument is current-active list, i.e. $active_window
-    # We're switching from first to second
-   
+_ztrace_save_list_state() {
     if [ "$1" = "1" ]; then
         # Switching from first list, save its state
         one_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN=$HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
@@ -126,8 +122,10 @@ _ztrace_switch_lists_states() {
         third_HLIST_IS_UNIQ_MODE=$HLIST_IS_UNIQ_MODE
         third_HLIST_CURRENT_SEGMENT=$HLIST_CURRENT_SEGMENT
     fi
+}
 
-    if [ "$2" = "1" ]; then
+_ztrace_retrieve_list_state() {
+    if [ "$1" = "1" ]; then
         # Switching to first list, restore its state
         HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN=$one_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
         HLIST_CURRENT_IDX=$one_HLIST_CURRENT_IDX
@@ -137,7 +135,7 @@ _ztrace_switch_lists_states() {
         HLIST_IS_UNIQ_MODE=$one_HLIST_IS_UNIQ_MODE
         HLIST_CURRENT_SEGMENT=$one_HLIST_CURRENT_SEGMENT
 
-    elif [ "$2" = "2" ]; then
+    elif [ "$1" = "2" ]; then
         # Switching to second list, restore its state
         HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN=$two_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
         HLIST_CURRENT_IDX=$two_HLIST_CURRENT_IDX
@@ -147,7 +145,7 @@ _ztrace_switch_lists_states() {
         HLIST_IS_UNIQ_MODE=$two_HLIST_IS_UNIQ_MODE
         HLIST_CURRENT_SEGMENT=$two_HLIST_CURRENT_SEGMENT
 
-    elif [ "$2" = "3" ]; then
+    elif [ "$1" = "3" ]; then
         # Switching to third list, restore its state
         HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN=$third_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
         HLIST_CURRENT_IDX=$third_HLIST_CURRENT_IDX
@@ -197,83 +195,98 @@ zcurses bg "status" "$boldattr" white/black
 HLIST_DRAW_ONLY=1
 HLIST_REMEMBER_STATE=0
 
+# Window (1): ztrace selection
+# Window (2): command editing
+# Window (3): content
+
+_ztrace_retrieve_list_state 3
 HLIST_START_IN_UNIQ_MODE=1
 h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "0" "${list2[@]}"
-# Save default state of list 2
-_ztrace_switch_lists_states 2 3
+# Save default state of list (3)
+_ztrace_save_list_state 3
 unset HLIST_START_IN_UNIQ_MODE
 
+_ztrace_retrieve_list_state 1
 HLIST_START_IN_UNIQ_MODE=1
 h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Ztraces:  " "0" "${prelist[@]}"
-# Save default state of list 3
-_ztrace_switch_lists_states 3 1
+# Save default state of list (1)
+_ztrace_save_list_state 1
 unset HLIST_START_IN_UNIQ_MODE
 
+_ztrace_retrieve_list_state 2
 h-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "1" "${list1[@]}"
-# Save default state of list 1
-_ztrace_switch_lists_states 1 3
+_ztrace_save_list_state 2
 
 HLIST_DRAW_ONLY=0
 HLIST_REMEMBER_STATE=1 # From now on lists remember their state
+
+# Main loop that allows to go back to selection
+while (( 1 )); do
 
 # The while loop here isn't actually needed
 # but this way the code is open for extensions
 while (( 1 )); do
     prelist=( /tmp/ztrace-*/* )
-    _ztrace_switch_lists_states "3" "1"
+
+    _ztrace_retrieve_list_state 2
     HLIST_DRAW_ONLY=1
     h-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "0" "${list1[@]}"
     HLIST_DRAW_ONLY=0
-    _ztrace_switch_lists_states "1" "3"
+    _ztrace_save_list_state 2
 
+    _ztrace_retrieve_list_state 1
     HLIST_DISABLE_SEARCH=0
     h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Ztraces:  " "1" "${prelist[@]}"
+    _ztrace_save_list_state 1
 
     # Ignore few events
-    if [[ "$REPLY" = "LEAVE" || "$REPLY" = "MOVE_LEFT" || $REPLY = "MOVE_RIGHT" ]]; then
-    elif [[ "$REPLY" = -(#c0,1)[0-9]## ]]; then
-        break
-    fi
+    [[ "$REPLY" = -(#c0,1)[0-9]## ]] && break
 done
 
 
 if [[ "$REPLY" = -(#c0,1)[0-9]## && "$REPLY" -lt 0 ]]; then
     [ "${(t)CURSOR}" = "integer-local-special" ] && zle redisplay
-    return
+    break
 elif [[ "$REPLY" = -(#c0,1)[0-9]## && "$REPLY" -gt 0 ]]; then
     local filename="${reply[REPLY]}"
     list2=( "${(@f)"$(<$filename)"}" )
 fi
 
-# Now go into loop of input handling of either of the two lists
+active_window=3
+
 while (( 1 )); do
 
-    if [ "$active_window" = "0" ]; then
-        _ztrace_switch_lists_states "1"
+    # Command window (2)
+    if [ "$active_window" = "2" ]; then
+        _ztrace_retrieve_list_state 3
         HLIST_DRAW_ONLY=1
-        h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  History:  " "0" "${list2[@]}"
+        h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "0" "${list2[@]}"
         HLIST_DRAW_ONLY=0
-        _ztrace_switch_lists_states "0"
+        _ztrace_save_list_state 3
 
+        _ztrace_retrieve_list_state 2
         HLIST_DISABLE_SEARCH=1
         h-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "1" "${list1[@]}"
-    else
-        _ztrace_switch_lists_states "0"
+        _ztrace_save_list_state 2
+    # Main window (3)
+    elif [ "$active_window" = "3" ]; then
+        _ztrace_retrieve_list_state 2
         HLIST_DRAW_ONLY=1
         h-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "0" "${list1[@]}"
         HLIST_DRAW_ONLY=0
-        _ztrace_switch_lists_states "1"
+        _ztrace_save_list_state 2
 
+        _ztrace_retrieve_list_state 3
         HLIST_DISABLE_SEARCH=0
-        h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  History:  " "1" "${list2[@]}"
+        h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "1" "${list2[@]}"
+        _ztrace_save_list_state 3
     fi
 
     # Init before possible simulation
     cur_bkp=-1
 
     if [ "$REPLY" = "LEAVE" ]; then
-        (( active_window = 1 - active_window ))
-        _ztrace_switch_lists_states "$active_window"
+        (( active_window = 2 + ((active_window-2 +1) % 2) ))
     elif [[ ("$REPLY" = "MOVE_LEFT" || $REPLY = "MOVE_RIGHT") && "$active_window" = 0 ]]; then
         #
         # Shift + cursor key - move existing element
@@ -345,10 +358,10 @@ while (( 1 )); do
                 zle redisplay
                 zle kill-buffer
                 zle -U "$list1[1]"
-                break
+                break 2
             else
                 print -zr "$list1[1]"
-                break
+                break 2
             fi
         elif [ "$answer" = "[F2-Reject]" ]; then
             # QUIT (1/2)
@@ -395,5 +408,8 @@ while (( 1 )); do
     # After simulating, restore current segment
     [ "$cur_bkp" -ne "-1" ] && HLIST_CURRENT_SEGMENT="$cur_bkp"
 
+done
+
+# Main loop
 done
 # vim: set filetype=zsh:
