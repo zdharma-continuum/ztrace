@@ -39,7 +39,7 @@ local -a two_HLIST_ENABLED_EVENTS
 local -A two_HLIST_ACTIVE_SEGMENTS
 local two_HLIST_TRACK_SEGMENTS
 
-# Ztrace list
+# Catched output list
 local three_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
 local three_HLIST_CURRENT_IDX
 local three_HLIST_IS_SEARCH_MODE
@@ -224,7 +224,7 @@ HLIST_REMEMBER_STATE=0
 
 # Window (1): ztrace selection
 # Window (2): command editing
-# Window (3): content
+# Window (3): content (catched output)
 
 typeset -a HLIST_ENABLED_EVENTS
 local HLIST_TRACK_SEGMENTS
