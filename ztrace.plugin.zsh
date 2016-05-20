@@ -2,6 +2,8 @@
 typeset -g ZTRACE_FD
 # Path to directory where traces are saved
 typeset -g ZTRACE_PATH="/tmp/ztrace-$$"
+# Name of file being currently used
+typeset -g ZTRACE_FNAME=""
 # Decreased on each command execution
 integer -g ZTRACE_COUNT=0
 # Is Ztrace in progress?
@@ -25,6 +27,7 @@ ztstart() {
     ZTRACE_COUNT=num
     ZTRACE_IN_PROGRESS=1
     local fname=$(date +%Y.%m.%d_%H:%M:%S)".ztrace"
+    ZTRACE_FNAME="$fname"
     -zt-pinfo "Ztrace started"
 
     # Save std out
@@ -36,6 +39,7 @@ ztstop() {
     ZTRACE_IN_PROGRESS=0
     exec >&$ZTRACE_FD && exec {ZTRACE_FD}>&-
     -zt-pinfo "Ztrace stopped"
+    ZTRACE_FNAME=""
 }
 
 #
@@ -60,8 +64,9 @@ ztstatus() {
     (( ZTRACE_COUNT-- ))
     if [[ "$ZTRACE_COUNT" -lt 0 && "$ZTRACE_IN_PROGRESS" -eq "1" ]]; then
         ztstop
+    elif [ "$ZTRACE_IN_PROGRESS" = "1" ]; then
+        print "\\n-------------" >> "$ZTRACE_PATH/$ZTRACE_FNAME"
     fi
-
 }
 
 ## }}}
