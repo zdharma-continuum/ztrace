@@ -62,7 +62,7 @@ ztstatus() {
 #
 -zt-precmd() {
     (( ZTRACE_COUNT-- ))
-    if [[ "$ZTRACE_COUNT" -lt 0 && "$ZTRACE_IN_PROGRESS" -eq "1" ]]; then
+    if [[ "$ZTRACE_COUNT" -lt 0 && "$ZTRACE_IN_PROGRESS" = "1" ]]; then
         ztstop
     elif [ "$ZTRACE_IN_PROGRESS" = "1" ]; then
         print "\\n-------------" >> "$ZTRACE_PATH/$ZTRACE_FNAME"
