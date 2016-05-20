@@ -239,7 +239,7 @@ _ztrace_save_list_state 3
 unset HLIST_START_IN_UNIQ_MODE
 
 _ztrace_retrieve_list_state 1
-HLIST_START_IN_UNIQ_MODE=1
+HLIST_START_IN_UNIQ_MODE=0
 HLIST_TRACK_SEGMENTS=0
 h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Ztraces:  " "0" "${prelist[@]}"
 # Save default state of list (1)
