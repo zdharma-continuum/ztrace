@@ -273,17 +273,41 @@ while (( 1 )); do
     traces=( /tmp/ztrace-*/*(om) )
     prelist=()
 
-    local trace session datetime ts
-    integer cur_ts=EPOCHSECONDS
+    local trace session dtime ts
+    integer cur_ts=EPOCHSECONDS ts_diff last_heading=0
+    local -a headings headings_times
+    headings=( "-- up to 5 minutes --" "-- up to 30 minutes --" "-- up to 1 hour --"
+               "-- up to 6 hours --"   "-- up to 1 day --"      "-- More than 1 day ago --" )
+    headings_times=( $((5*60))         $((30*60))               $((60*60))
+                     $((6*3600))       $((24*3600))             $cur_ts  )
+
+    integer idx=0
+
     for trace in "${traces[@]}"; do
+        idx+=1
+
         trace="${trace#/tmp/ztrace-}"
         session="${trace%%/*}"
-        datetime="${trace##*/}"
-        datetime="${datetime%.ztrace}"
-        datetime="${datetime/_/ }"
+        dtime="${trace##*/}"
+        dtime="${dtime%.ztrace}"
+        dtime="${dtime/_/ }"
 
-        strftime -r -s "ts" '%Y.%m.%d %H:%M:%S' "$datetime"
-        prelist+=( "[SESSION $session] $datetime" )
+        strftime -r -s "ts" '%Y.%m.%d %H:%M:%S' "$dtime"
+
+        ts_diff=$(( cur_ts-ts ))
+        integer i
+        for (( i=1; i<5; i++ )); do
+            if [[ "$ts_diff" -lt "${headings_times[$i]}" ]]; then
+                if [ "$last_heading" -ne "$i" ]; then
+                    prelist+=( "$headings[i]" )
+                    last_heading=i
+                    break
+                fi
+            fi
+        done
+
+        # Find to which heading this entry belongs
+        prelist+=( "[SESSION $session] $dtime" )
     done
 
     _ztrace_retrieve_list_state 1
@@ -300,7 +324,13 @@ if [[ "$REPLY" = -(#c0,1)[0-9]## && "$REPLY" -lt 0 ]]; then
     [ "${(t)CURSOR}" = "integer-local-special" ] && zle redisplay
     break
 elif [[ "$REPLY" = -(#c0,1)[0-9]## && "$REPLY" -gt 0 ]]; then
-    local filename="${reply[REPLY]}"
+    local selection="${reply[REPLY]}"
+    local session="${selection#* }"
+    session="${session%%\]*}"
+    local dtime="${selection##*\] }"
+    dtime="${dtime/ /_}"
+
+    local filename="/tmp/ztrace-${session}/${dtime}.ztrace"
     list2=( "${(@f)"$(<$filename)"}" )
 fi
 
