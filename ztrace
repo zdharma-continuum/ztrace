@@ -27,6 +27,7 @@ local one_HLIST_CURRENT_SEGMENT
 local -a one_HLIST_ENABLED_EVENTS
 local -A one_HLIST_ACTIVE_SEGMENTS
 local one_HLIST_TRACK_SEGMENTS
+local -a one_HLIST_NONSELECTABLE_ELEMENTS
 
 # Command list
 local two_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
@@ -39,6 +40,7 @@ local two_HLIST_CURRENT_SEGMENT
 local -a two_HLIST_ENABLED_EVENTS
 local -A two_HLIST_ACTIVE_SEGMENTS
 local two_HLIST_TRACK_SEGMENTS
+local -a two_HLIST_NONSELECTABLE_ELEMENTS
 
 # Catched output list
 local three_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
@@ -114,6 +116,7 @@ _ztrace_save_list_state() {
         one_HLIST_ENABLED_EVENTS=( ${HLIST_ENABLED_EVENTS[@]} )
         one_HLIST_ACTIVE_SEGMENTS=( ${(kv)HLIST_ACTIVE_SEGMENTS[@]} )
         one_HLIST_TRACK_SEGMENTS=$HLIST_TRACK_SEGMENTS
+        one_HLIST_NONSELECTABLE_ELEMENTS=( ${HLIST_NONSELECTABLE_ELEMENTS[@]} )
 
     elif [ "$1" = "2" ]; then
         # Switching from second list, save its state
@@ -127,6 +130,7 @@ _ztrace_save_list_state() {
         two_HLIST_ENABLED_EVENTS=( ${HLIST_ENABLED_EVENTS[@]} )
         two_HLIST_ACTIVE_SEGMENTS=( ${(kv)HLIST_ACTIVE_SEGMENTS[@]} )
         two_HLIST_TRACK_SEGMENTS=$HLIST_TRACK_SEGMENTS
+        two_HLIST_NONSELECTABLE_ELEMENTS=( ${HLIST_NONSELECTABLE_ELEMENTS[@]} )
 
     elif [ "$1" = "3" ]; then
         # Switching from third list, save its state
@@ -140,6 +144,7 @@ _ztrace_save_list_state() {
         three_HLIST_ENABLED_EVENTS=( ${HLIST_ENABLED_EVENTS[@]} )
         three_HLIST_ACTIVE_SEGMENTS=( ${(kv)HLIST_ACTIVE_SEGMENTS[@]} )
         three_HLIST_TRACK_SEGMENTS=$HLIST_TRACK_SEGMENTS
+        three_HLIST_NONSELECTABLE_ELEMENTS=( ${HLIST_NONSELECTABLE_ELEMENTS[@]} )
     fi
 }
 
@@ -156,6 +161,7 @@ _ztrace_retrieve_list_state() {
         HLIST_ENABLED_EVENTS=( ${one_HLIST_ENABLED_EVENTS[@]} )
         HLIST_ACTIVE_SEGMENTS=( ${(kv)one_HLIST_ACTIVE_SEGMENTS[@]} )
         HLIST_TRACK_SEGMENTS=$one_HLIST_TRACK_SEGMENTS
+        HLIST_NONSELECTABLE_ELEMENTS=( ${one_HLIST_NONSELECTABLE_ELEMENTS[@]} )
 
     elif [ "$1" = "2" ]; then
         # Switching to second list, restore its state
@@ -169,6 +175,7 @@ _ztrace_retrieve_list_state() {
         HLIST_ENABLED_EVENTS=( ${two_HLIST_ENABLED_EVENTS[@]} )
         HLIST_ACTIVE_SEGMENTS=( ${(kv)two_HLIST_ACTIVE_SEGMENTS[@]} )
         HLIST_TRACK_SEGMENTS=$two_HLIST_TRACK_SEGMENTS
+        HLIST_NONSELECTABLE_ELEMENTS=( ${two_HLIST_NONSELECTABLE_ELEMENTS[@]} )
 
     elif [ "$1" = "3" ]; then
         # Switching to third list, restore its state
@@ -182,6 +189,7 @@ _ztrace_retrieve_list_state() {
         HLIST_ENABLED_EVENTS=( ${three_HLIST_ENABLED_EVENTS[@]} )
         HLIST_ACTIVE_SEGMENTS=( ${(kv)three_HLIST_ACTIVE_SEGMENTS[@]} )
         HLIST_TRACK_SEGMENTS=$three_HLIST_TRACK_SEGMENTS
+        HLIST_NONSELECTABLE_ELEMENTS=( ${three_HLIST_NONSELECTABLE_ELEMENTS[@]} )
     fi
 }
 
@@ -283,9 +291,9 @@ while (( 1 )); do
 
     integer idx=0
 
-    for trace in "${traces[@]}"; do
-        idx+=1
+    one_HLIST_NONSELECTABLE_ELEMENTS=()
 
+    for trace in "${traces[@]}"; do
         trace="${trace#/tmp/ztrace-}"
         session="${trace%%/*}"
         dtime="${trace##*/}"
@@ -299,7 +307,9 @@ while (( 1 )); do
         for (( i=1; i<5; i++ )); do
             if [[ "$ts_diff" -lt "${headings_times[$i]}" ]]; then
                 if [ "$last_heading" -ne "$i" ]; then
-                    prelist+=( "$headings[i]" )
+                    idx+=1
+                    prelist+=( "$headings[i] $idx" )
+                    one_HLIST_NONSELECTABLE_ELEMENTS+=( "$idx" )
                     last_heading=i
                     break
                 fi
@@ -307,6 +317,7 @@ while (( 1 )); do
         done
 
         # Find to which heading this entry belongs
+        idx+=1
         prelist+=( "[SESSION $session] $dtime" )
     done
 
