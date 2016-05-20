@@ -1,4 +1,4 @@
-# Uses h-list
+# Uses h2-list
 
 emulate -LR zsh
 
@@ -168,7 +168,7 @@ _ztrace_retrieve_list_state() {
 
 unset HLIST_COLORING_PATTERN
 
-[ -f ~/.config/ztrace/h-list.conf ] && builtin source ~/.config/ztrace/h-list.conf
+[ -f ~/.config/ztrace/h2-list.conf ] && builtin source ~/.config/ztrace/h2-list.conf
 [ -f ~/.config/ztrace/ztrace.conf ] && builtin source ~/.config/ztrace/ztrace.conf
 
 typeset -a prelist list1 list2 undolist
@@ -200,7 +200,7 @@ zcurses bg "cmd" "$boldattr" white/black
 zcurses bg "main" "$boldattr" white/black
 zcurses bg "status" "$boldattr" white/black
 
-# First draw three vanilla (no remembering of state) h-lists, saving their default state
+# First draw three vanilla (no remembering of state) h2-lists, saving their default state
 HLIST_DRAW_ONLY=1
 HLIST_REMEMBER_STATE=0
 
@@ -210,21 +210,21 @@ HLIST_REMEMBER_STATE=0
 
 _ztrace_retrieve_list_state 3
 HLIST_START_IN_UNIQ_MODE=1
-h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "0" "${list2[@]}"
+h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "0" "${list2[@]}"
 # Save default state of list (3)
 _ztrace_save_list_state 3
 unset HLIST_START_IN_UNIQ_MODE
 
 _ztrace_retrieve_list_state 1
 HLIST_START_IN_UNIQ_MODE=1
-h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Ztraces:  " "0" "${prelist[@]}"
+h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Ztraces:  " "0" "${prelist[@]}"
 # Save default state of list (1)
 _ztrace_save_list_state 1
 unset HLIST_START_IN_UNIQ_MODE
 
 _ztrace_retrieve_list_state 2
 HLIST_ENABLED_EVENTS=( "BR_MOVE_LEFT" "BR_MOVE_RIGHT" )
-h-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "1" "${list1[@]}"
+h2-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "1" "${list1[@]}"
 _ztrace_save_list_state 2
 unset HLIST_ENABLED_EVENTS
 
@@ -241,13 +241,13 @@ while (( 1 )); do
 
     _ztrace_retrieve_list_state 2
     HLIST_DRAW_ONLY=1
-    h-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "0" "${list1[@]}"
+    h2-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "0" "${list1[@]}"
     HLIST_DRAW_ONLY=0
     _ztrace_save_list_state 2
 
     _ztrace_retrieve_list_state 1
     HLIST_DISABLE_SEARCH=0
-    h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Ztraces:  " "1" "${prelist[@]}"
+    h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Ztraces:  " "1" "${prelist[@]}"
     _ztrace_save_list_state 1
 
     # Ignore few events
@@ -271,25 +271,25 @@ while (( 1 )); do
     if [ "$active_window" = "2" ]; then
         _ztrace_retrieve_list_state 3
         HLIST_DRAW_ONLY=1
-        h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "0" "${list2[@]}"
+        h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "0" "${list2[@]}"
         HLIST_DRAW_ONLY=0
         _ztrace_save_list_state 3
 
         _ztrace_retrieve_list_state 2
         HLIST_DISABLE_SEARCH=1
-        h-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "1" "${list1[@]}"
+        h2-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "1" "${list1[@]}"
         _ztrace_save_list_state 2
     # Main window (3)
     elif [ "$active_window" = "3" ]; then
         _ztrace_retrieve_list_state 2
         HLIST_DRAW_ONLY=1
-        h-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "0" "${list1[@]}"
+        h2-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "0" "${list1[@]}"
         HLIST_DRAW_ONLY=0
         _ztrace_save_list_state 2
 
         _ztrace_retrieve_list_state 3
         HLIST_DISABLE_SEARCH=0
-        h-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "1" "${list2[@]}"
+        h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "1" "${list2[@]}"
         _ztrace_save_list_state 3
     fi
 

@@ -103,6 +103,6 @@ ztstatus() {
 
 -zt-init
 
-autoload h-list h-list-input h-list-draw
+autoload h2-list h2-list-input h2-list-draw
 autoload ztrace ztrace-usetty-wrapper ztrace-widget
 

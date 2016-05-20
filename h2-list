@@ -23,7 +23,7 @@ zmodload zsh/terminfo 2>/dev/null && _hlist_has_terminfo=1
 trap "REPLY=-2; reply=(); return" TERM INT QUIT
 
 # Drawing and input
-autoload h-list-draw h-list-input
+autoload h2-list-draw h2-list-input
 
 # Outputs a message in the bottom of the screen
 _hlist_status_msg() {
@@ -137,7 +137,7 @@ _hlist_mark_current_segment_in_current_element() {
 
 # Check if there is proper input
 if [ "$#" -lt 1 ]; then
-    echo "Usage: h-list element_1 ..."
+    echo "Usage: h2-list element_1 ..."
     return 1
 fi
 
@@ -313,7 +313,7 @@ while (( 1 )); do
         [ "$#disp_list2" -gt 0 ] && _hlist_mark_current_segment_in_current_element
 
         # Output colored list
-        h-list-draw "$(( (HLIST_CURRENT_IDX-1) % page_height + 1 ))" \
+        h2-list-draw "$(( (HLIST_CURRENT_IDX-1) % page_height + 1 ))" \
             "$page_height" "$page_width" 1 2 "$HLIST_TEXT_OFFSET" "$wname_main" \
             "$disp_list2[@]"
     else
@@ -375,7 +375,7 @@ while (( 1 )); do
         [ "$#disp_list2" -gt 0 ] && _hlist_mark_current_segment_in_current_element
 
         # Output the list
-        h-list-draw "$(( (HLIST_CURRENT_IDX-1) % page_height + 1 ))" \
+        h2-list-draw "$(( (HLIST_CURRENT_IDX-1) % page_height + 1 ))" \
             "$page_height" "$page_width" 1 2 "$HLIST_TEXT_OFFSET" "$wname_main" \
             "$disp_list2[@]"
     fi
@@ -431,7 +431,7 @@ while (( 1 )); do
         }
     fi
 
-    h-list-input "$HLIST_CURRENT_IDX" "$HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN" \
+    h2-list-input "$HLIST_CURRENT_IDX" "$HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN" \
                     "$page_height" "$page_width" "$last_element" "$nseg" "$HLIST_TEXT_OFFSET" \
                     "$final_key" "$HLIST_IS_SEARCH_MODE" "$HLIST_SEARCH_BUFFER" \
                     "$HLIST_IS_UNIQ_MODE" "$HLIST_DISABLE_SEARCH"

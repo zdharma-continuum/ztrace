@@ -1,5 +1,5 @@
 # Copy this file into /usr/share/zsh/site-functions/
-# and add 'autoload h-list-draw` to .zshrc
+# and add 'autoload h2-list-draw` to .zshrc
 #
 # This is an internal function not for direct use
 
