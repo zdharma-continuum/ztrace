@@ -2,7 +2,7 @@
 
 emulate -LR zsh
 
-setopt extendedglob
+setopt extendedglob typesetsilent
 
 _ztrace_has_terminfo=0
 
