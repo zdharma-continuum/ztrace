@@ -261,7 +261,7 @@ while (( 1 )); do
 # The while loop here isn't actually needed
 # but this way the code is open for extensions
 while (( 1 )); do
-    prelist=( /tmp/ztrace-*/* )
+    prelist=( /tmp/ztrace-*/*(om) )
 
     _ztrace_retrieve_list_state 2
     HLIST_DRAW_ONLY=1
