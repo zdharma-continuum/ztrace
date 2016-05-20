@@ -23,7 +23,7 @@ local one_HLIST_SEARCH_BUFFER
 local one_HLIST_TEXT_OFFSET
 local one_HLIST_IS_UNIQ_MODE
 local one_HLIST_CURRENT_SEGMENT
-local -a one_HLIST_CURRENT_SEGMENT
+local -a one_HLIST_ENABLED_EVENTS
 
 # Command list
 local two_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
@@ -33,7 +33,7 @@ local two_HLIST_SEARCH_BUFFER
 local two_HLIST_TEXT_OFFSET
 local two_HLIST_IS_UNIQ_MODE
 local two_HLIST_CURRENT_SEGMENT
-local -a two_HLIST_CURRENT_SEGMENT
+local -a two_HLIST_ENABLED_EVENTS
 
 # Ztrace list
 local three_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
@@ -43,7 +43,7 @@ local three_HLIST_SEARCH_BUFFER
 local three_HLIST_TEXT_OFFSET
 local three_HLIST_IS_UNIQ_MODE
 local three_HLIST_CURRENT_SEGMENT
-local -a three_HLIST_CURRENT_SEGMENT
+local -a three_HLIST_ENABLED_EVENTS
 
 # Cleanup before any exit
 _ztrace_exit() {
