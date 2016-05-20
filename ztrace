@@ -8,6 +8,7 @@ _ztrace_has_terminfo=0
 
 zmodload zsh/curses
 zmodload zsh/parameter
+zmodload zsh/datetime
 zmodload zsh/terminfo 2>/dev/null && _ztrace_has_terminfo=1
 
 trap "_ztrace_exit" EXIT
@@ -261,13 +262,29 @@ while (( 1 )); do
 # The while loop here isn't actually needed
 # but this way the code is open for extensions
 while (( 1 )); do
-    prelist=( /tmp/ztrace-*/*(om) )
-
     _ztrace_retrieve_list_state 2
     HLIST_DRAW_ONLY=1
     h2-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "0" "${list1[@]}"
     HLIST_DRAW_ONLY=0
     _ztrace_save_list_state 2
+
+    # Gather the traces to process and display them
+    local -a traces
+    traces=( /tmp/ztrace-*/*(om) )
+    prelist=()
+
+    local trace session datetime ts
+    integer cur_ts=EPOCHSECONDS
+    for trace in "${traces[@]}"; do
+        trace="${trace#/tmp/ztrace-}"
+        session="${trace%%/*}"
+        datetime="${trace##*/}"
+        datetime="${datetime%.ztrace}"
+        datetime="${datetime/_/ }"
+
+        strftime -r -s "ts" '%Y.%m.%d %H:%M:%S' "$datetime"
+        prelist+=( "[SESSION $session] $datetime" )
+    done
 
     _ztrace_retrieve_list_state 1
     HLIST_DISABLE_SEARCH=0
