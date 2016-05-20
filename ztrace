@@ -24,6 +24,8 @@ local one_HLIST_TEXT_OFFSET
 local one_HLIST_IS_UNIQ_MODE
 local one_HLIST_CURRENT_SEGMENT
 local -a one_HLIST_ENABLED_EVENTS
+local -A one_HLIST_ACTIVE_SEGMENTS
+local one_HLIST_TRACK_SEGMENTS
 
 # Command list
 local two_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
@@ -34,6 +36,8 @@ local two_HLIST_TEXT_OFFSET
 local two_HLIST_IS_UNIQ_MODE
 local two_HLIST_CURRENT_SEGMENT
 local -a two_HLIST_ENABLED_EVENTS
+local -A two_HLIST_ACTIVE_SEGMENTS
+local two_HLIST_TRACK_SEGMENTS
 
 # Ztrace list
 local three_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
@@ -44,6 +48,8 @@ local three_HLIST_TEXT_OFFSET
 local three_HLIST_IS_UNIQ_MODE
 local three_HLIST_CURRENT_SEGMENT
 local -a three_HLIST_ENABLED_EVENTS
+local -A three_HLIST_ACTIVE_SEGMENTS
+local three_HLIST_TRACK_SEGMENTS
 
 # Cleanup before any exit
 _ztrace_exit() {
@@ -105,6 +111,8 @@ _ztrace_save_list_state() {
         one_HLIST_IS_UNIQ_MODE=$HLIST_IS_UNIQ_MODE
         one_HLIST_CURRENT_SEGMENT=$HLIST_CURRENT_SEGMENT
         one_HLIST_ENABLED_EVENTS=( ${HLIST_ENABLED_EVENTS[@]} )
+        one_HLIST_ACTIVE_SEGMENTS=( ${(kv)HLIST_ACTIVE_SEGMENTS[@]} )
+        one_HLIST_TRACK_SEGMENTS=$HLIST_TRACK_SEGMENTS
 
     elif [ "$1" = "2" ]; then
         # Switching from second list, save its state
@@ -116,6 +124,8 @@ _ztrace_save_list_state() {
         two_HLIST_IS_UNIQ_MODE=$HLIST_IS_UNIQ_MODE
         two_HLIST_CURRENT_SEGMENT=$HLIST_CURRENT_SEGMENT
         two_HLIST_ENABLED_EVENTS=( ${HLIST_ENABLED_EVENTS[@]} )
+        two_HLIST_ACTIVE_SEGMENTS=( ${(kv)HLIST_ACTIVE_SEGMENTS[@]} )
+        two_HLIST_TRACK_SEGMENTS=$HLIST_TRACK_SEGMENTS
 
     elif [ "$1" = "3" ]; then
         # Switching from third list, save its state
@@ -127,6 +137,8 @@ _ztrace_save_list_state() {
         three_HLIST_IS_UNIQ_MODE=$HLIST_IS_UNIQ_MODE
         three_HLIST_CURRENT_SEGMENT=$HLIST_CURRENT_SEGMENT
         three_HLIST_ENABLED_EVENTS=( ${HLIST_ENABLED_EVENTS[@]} )
+        three_HLIST_ACTIVE_SEGMENTS=( ${(kv)HLIST_ACTIVE_SEGMENTS[@]} )
+        three_HLIST_TRACK_SEGMENTS=$HLIST_TRACK_SEGMENTS
     fi
 }
 
@@ -141,6 +153,8 @@ _ztrace_retrieve_list_state() {
         HLIST_IS_UNIQ_MODE=$one_HLIST_IS_UNIQ_MODE
         HLIST_CURRENT_SEGMENT=$one_HLIST_CURRENT_SEGMENT
         HLIST_ENABLED_EVENTS=( ${one_HLIST_ENABLED_EVENTS[@]} )
+        HLIST_ACTIVE_SEGMENTS=( ${(kv)one_HLIST_ACTIVE_SEGMENTS[@]} )
+        HLIST_TRACK_SEGMENTS=$one_HLIST_TRACK_SEGMENTS
 
     elif [ "$1" = "2" ]; then
         # Switching to second list, restore its state
@@ -152,6 +166,8 @@ _ztrace_retrieve_list_state() {
         HLIST_IS_UNIQ_MODE=$two_HLIST_IS_UNIQ_MODE
         HLIST_CURRENT_SEGMENT=$two_HLIST_CURRENT_SEGMENT
         HLIST_ENABLED_EVENTS=( ${two_HLIST_ENABLED_EVENTS[@]} )
+        HLIST_ACTIVE_SEGMENTS=( ${(kv)two_HLIST_ACTIVE_SEGMENTS[@]} )
+        HLIST_TRACK_SEGMENTS=$two_HLIST_TRACK_SEGMENTS
 
     elif [ "$1" = "3" ]; then
         # Switching to third list, restore its state
@@ -163,6 +179,8 @@ _ztrace_retrieve_list_state() {
         HLIST_IS_UNIQ_MODE=$three_HLIST_IS_UNIQ_MODE
         HLIST_CURRENT_SEGMENT=$three_HLIST_CURRENT_SEGMENT
         HLIST_ENABLED_EVENTS=( ${three_HLIST_ENABLED_EVENTS[@]} )
+        HLIST_ACTIVE_SEGMENTS=( ${(kv)three_HLIST_ACTIVE_SEGMENTS[@]} )
+        HLIST_TRACK_SEGMENTS=$three_HLIST_TRACK_SEGMENTS
     fi
 }
 
@@ -208,8 +226,12 @@ HLIST_REMEMBER_STATE=0
 # Window (2): command editing
 # Window (3): content
 
+typeset -a HLIST_ENABLED_EVENTS
+local HLIST_TRACK_SEGMENTS
+
 _ztrace_retrieve_list_state 3
 HLIST_START_IN_UNIQ_MODE=1
+HLIST_TRACK_SEGMENTS=0
 h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "0" "${list2[@]}"
 # Save default state of list (3)
 _ztrace_save_list_state 3
@@ -217,6 +239,7 @@ unset HLIST_START_IN_UNIQ_MODE
 
 _ztrace_retrieve_list_state 1
 HLIST_START_IN_UNIQ_MODE=1
+HLIST_TRACK_SEGMENTS=0
 h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Ztraces:  " "0" "${prelist[@]}"
 # Save default state of list (1)
 _ztrace_save_list_state 1
@@ -224,6 +247,7 @@ unset HLIST_START_IN_UNIQ_MODE
 
 _ztrace_retrieve_list_state 2
 HLIST_ENABLED_EVENTS=( "BR_MOVE_LEFT" "BR_MOVE_RIGHT" )
+HLIST_TRACK_SEGMENTS=1
 h2-list "cmd" "4" $term_width "" "0" "0" "  Command:  " "1" "${list1[@]}"
 _ztrace_save_list_state 2
 unset HLIST_ENABLED_EVENTS
