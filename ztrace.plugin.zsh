@@ -19,6 +19,9 @@ ztstart() {
         return 1
     fi
 
+    # Create destination path for the process
+    command mkdir -p "$ZTRACE_PATH"
+
     ZTRACE_COUNT=num
     ZTRACE_IN_PROGRESS=1
     local fname=$(date +%Y.%m.%d_%H:%M:%S)".ztrace"
@@ -81,9 +84,6 @@ ztstatus() {
 #
 -zt-init() {
     setopt localoptions nullglob
-
-    # Create destination path for the process
-    command mkdir -p "$ZTRACE_PATH"
 
     # Cleary any possible left overs from previous sessions
     typeset -a traces
