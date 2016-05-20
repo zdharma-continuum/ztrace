@@ -230,7 +230,7 @@ typeset -a HLIST_ENABLED_EVENTS
 local HLIST_TRACK_SEGMENTS
 
 _ztrace_retrieve_list_state 3
-HLIST_START_IN_UNIQ_MODE=1
+HLIST_START_IN_UNIQ_MODE=0
 HLIST_TRACK_SEGMENTS=0
 h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "0" "${list2[@]}"
 # Save default state of list (3)
