@@ -284,10 +284,11 @@ while (( 1 )); do
     local trace session dtime ts
     integer cur_ts=EPOCHSECONDS ts_diff last_heading=0
     local -a headings headings_times
-    headings=( "-- up to 5 minutes --" "-- up to 30 minutes --" "-- up to 1 hour --"
-               "-- up to 6 hours --"   "-- up to 1 day --"      "-- More than 1 day ago --" )
-    headings_times=( $((5*60))         $((30*60))               $((60*60))
-                     $((6*3600))       $((24*3600))             $cur_ts  )
+    local col=$'\x1b[00;32m' rst=$'\x1b[00;00m'
+    headings=( "$col== up to 5 minutes ==$rst" "$col== up to 30 minutes ==$rst" "$col== up to 1 hour ==$rst"
+               "$col== up to 6 hours ==$rst"   "$col== up to 1 day ==$rst"      "$col== More than 1 day ago ==$rst" )
+    headings_times=( $((5*60))                 $((30*60))                       $((60*60))
+                     $((6*3600))               $((24*3600))                     $cur_ts  )
 
     integer idx=0
 
