@@ -305,15 +305,15 @@ while (( 1 )); do
 
         ts_diff=$(( cur_ts-ts ))
         integer i
-        for (( i=1; i<5; i++ )); do
+        for (( i=1; i<=6; i++ )); do
             if [[ "$ts_diff" -lt "${headings_times[$i]}" ]]; then
                 if [ "$last_heading" -ne "$i" ]; then
                     idx+=1
                     prelist+=( "$headings[i]" )
                     one_HLIST_NONSELECTABLE_ELEMENTS+=( "$idx" )
                     last_heading=i
-                    break
                 fi
+                break
             fi
         done
 
