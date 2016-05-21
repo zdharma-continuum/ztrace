@@ -54,6 +54,18 @@ local -a three_HLIST_ENABLED_EVENTS
 local -A three_HLIST_ACTIVE_SEGMENTS
 local three_HLIST_TRACK_SEGMENTS
 
+# History list
+local four_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
+local four_HLIST_CURRENT_IDX
+local four_HLIST_IS_SEARCH_MODE
+local four_HLIST_SEARCH_BUFFER
+local four_HLIST_TEXT_OFFSET
+local four_HLIST_IS_UNIQ_MODE
+local four_HLIST_CURRENT_SEGMENT
+local -a four_HLIST_ENABLED_EVENTS
+local -A four_HLIST_ACTIVE_SEGMENTS
+local four_HLIST_TRACK_SEGMENTS
+
 # Cleanup before any exit
 _ztrace_exit() {
     setopt localoptions
@@ -145,6 +157,20 @@ _ztrace_save_list_state() {
         three_HLIST_ACTIVE_SEGMENTS=( ${(kv)HLIST_ACTIVE_SEGMENTS[@]} )
         three_HLIST_TRACK_SEGMENTS=$HLIST_TRACK_SEGMENTS
         three_HLIST_NONSELECTABLE_ELEMENTS=( ${HLIST_NONSELECTABLE_ELEMENTS[@]} )
+
+    elif [ "$1" = "4" ]; then
+        # Switching from third list, save its state
+        four_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN=$HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
+        four_HLIST_CURRENT_IDX=$HLIST_CURRENT_IDX
+        four_HLIST_IS_SEARCH_MODE=$HLIST_IS_SEARCH_MODE
+        four_HLIST_SEARCH_BUFFER=$HLIST_SEARCH_BUFFER
+        four_HLIST_TEXT_OFFSET=$HLIST_TEXT_OFFSET
+        four_HLIST_IS_UNIQ_MODE=$HLIST_IS_UNIQ_MODE
+        four_HLIST_CURRENT_SEGMENT=$HLIST_CURRENT_SEGMENT
+        four_HLIST_ENABLED_EVENTS=( ${HLIST_ENABLED_EVENTS[@]} )
+        four_HLIST_ACTIVE_SEGMENTS=( ${(kv)HLIST_ACTIVE_SEGMENTS[@]} )
+        four_HLIST_TRACK_SEGMENTS=$HLIST_TRACK_SEGMENTS
+        four_HLIST_NONSELECTABLE_ELEMENTS=( ${HLIST_NONSELECTABLE_ELEMENTS[@]} )
     fi
 }
 
@@ -190,6 +216,20 @@ _ztrace_retrieve_list_state() {
         HLIST_ACTIVE_SEGMENTS=( ${(kv)three_HLIST_ACTIVE_SEGMENTS[@]} )
         HLIST_TRACK_SEGMENTS=$three_HLIST_TRACK_SEGMENTS
         HLIST_NONSELECTABLE_ELEMENTS=( ${three_HLIST_NONSELECTABLE_ELEMENTS[@]} )
+
+    elif [ "$1" = "4" ]; then
+        # Switching to third list, restore its state
+        HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN=$four_HLIST_FROM_WHAT_IDX_LIST_IS_SHOWN
+        HLIST_CURRENT_IDX=$four_HLIST_CURRENT_IDX
+        HLIST_IS_SEARCH_MODE=$four_HLIST_IS_SEARCH_MODE
+        HLIST_SEARCH_BUFFER=$four_HLIST_SEARCH_BUFFER
+        HLIST_TEXT_OFFSET=$four_HLIST_TEXT_OFFSET
+        HLIST_IS_UNIQ_MODE=$four_HLIST_IS_UNIQ_MODE
+        HLIST_CURRENT_SEGMENT=$four_HLIST_CURRENT_SEGMENT
+        HLIST_ENABLED_EVENTS=( ${four_HLIST_ENABLED_EVENTS[@]} )
+        HLIST_ACTIVE_SEGMENTS=( ${(kv)four_HLIST_ACTIVE_SEGMENTS[@]} )
+        HLIST_TRACK_SEGMENTS=$four_HLIST_TRACK_SEGMENTS
+        HLIST_NONSELECTABLE_ELEMENTS=( ${four_HLIST_NONSELECTABLE_ELEMENTS[@]} )
     fi
 }
 
@@ -199,7 +239,7 @@ unset HLIST_COLORING_PATTERN
 [ -f ~/.config/ztrace/ztrace.conf ] && builtin source ~/.config/ztrace/ztrace.conf
 
 typeset -a prelist list1 list2 undolist
-local answer active_window=1
+local answer active_window=1 active_subwindow=1
 local boldattr
 integer cur_bkp
 
@@ -238,6 +278,9 @@ HLIST_REMEMBER_STATE=0
 typeset -a HLIST_ENABLED_EVENTS
 local HLIST_TRACK_SEGMENTS
 
+#
+# Catched output (3)
+#
 _ztrace_retrieve_list_state 3
 HLIST_START_IN_UNIQ_MODE=0
 HLIST_TRACK_SEGMENTS=0
@@ -246,6 +289,20 @@ h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Ca
 _ztrace_save_list_state 3
 unset HLIST_START_IN_UNIQ_MODE
 
+#
+# History (4)
+#
+_ztrace_retrieve_list_state 4
+HLIST_START_IN_UNIQ_MODE=1
+HLIST_TRACK_SEGMENTS=0
+h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  History:  " "0"
+# Save default state of list (4)
+_ztrace_save_list_state 4
+unset HLIST_START_IN_UNIQ_MODE
+
+#
+# Ztraces (1)
+#
 _ztrace_retrieve_list_state 1
 HLIST_START_IN_UNIQ_MODE=0
 HLIST_TRACK_SEGMENTS=0
@@ -254,6 +311,9 @@ h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Zt
 _ztrace_save_list_state 1
 unset HLIST_START_IN_UNIQ_MODE
 
+#
+# Command (2)
+#
 _ztrace_retrieve_list_state 2
 HLIST_ENABLED_EVENTS=( "BR_MOVE_LEFT" "BR_MOVE_RIGHT" )
 HLIST_TRACK_SEGMENTS=1
@@ -362,11 +422,19 @@ while (( 1 )); do
 
     # Command window (2)
     if [ "$active_window" = "2" ]; then
-        _ztrace_retrieve_list_state 3
-        HLIST_DRAW_ONLY=1
-        h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "0" "${list2[@]}"
-        HLIST_DRAW_ONLY=0
-        _ztrace_save_list_state 3
+        if [ "$active_subwindow" = 1 ]; then
+            _ztrace_retrieve_list_state 3
+            HLIST_DRAW_ONLY=1
+            h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "0" "${list2[@]}"
+            HLIST_DRAW_ONLY=0
+            _ztrace_save_list_state 3
+        elif [ "$active_subwindow" = "2" ]; then
+            _ztrace_retrieve_list_state 4
+            HLIST_DRAW_ONLY=1
+            h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  History:  " "0" "${history[@]}"
+            HLIST_DRAW_ONLY=0
+            _ztrace_save_list_state 4
+        fi
 
         _ztrace_retrieve_list_state 2
         HLIST_DISABLE_SEARCH=1
@@ -380,10 +448,17 @@ while (( 1 )); do
         HLIST_DRAW_ONLY=0
         _ztrace_save_list_state 2
 
-        _ztrace_retrieve_list_state 3
-        HLIST_DISABLE_SEARCH=0
-        h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "1" "${list2[@]}"
-        _ztrace_save_list_state 3
+        if [ "$active_subwindow" = 1 ]; then
+            _ztrace_retrieve_list_state 3
+            HLIST_DISABLE_SEARCH=0
+            h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  Catched output:  " "1" "${list2[@]}"
+            _ztrace_save_list_state 3
+        elif [ "$active_subwindow" = "2" ]; then
+            _ztrace_retrieve_list_state 4
+            HLIST_DISABLE_SEARCH=0
+            h2-list "main" $(( term_height-7 )) $term_width "status" "3" "$term_width" "  History:  " "1" "${history[@]}"
+            _ztrace_save_list_state 4
+        fi
     fi
 
     # Init before possible simulation
@@ -391,6 +466,8 @@ while (( 1 )); do
 
     if [ "$REPLY" = "LEAVE" ]; then
         (( active_window = 2 + ((active_window-2 +1) % 2) ))
+    elif [ "$REPLY" = "SUBWIN" ]; then
+        (( active_subwindow = 1 + (active_subwindow % 2) ))
     elif [[ ("$REPLY" = "MOVE_LEFT" || $REPLY = "MOVE_RIGHT" ||
              "$REPLY" = "BR_MOVE_LEFT" || $REPLY = "BR_MOVE_RIGHT") && "$active_window" = 2 ]]; then
         #

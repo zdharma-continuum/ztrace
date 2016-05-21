@@ -167,6 +167,9 @@ case "$key" in
     (o|$'\C-O')
         uniq_mode=1-uniq_mode
         ;;
+    (e|$'\C-E')
+        reply=( "$current_idx" "SUBWIN" )
+        ;;
     (*)
         ;;
 esac
@@ -261,6 +264,9 @@ case "$key" in
         ;;
     ($'\C-O')
         uniq_mode=1-uniq_mode
+        ;;
+    ($'\C-E')
+        reply=( "$current_idx" "SUBWIN" )
         ;;
     (*)
         if [[ $#key == 1 && $((#key)) -lt 31 ]]; then

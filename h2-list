@@ -493,6 +493,10 @@ while (( 1 )); do
         zcurses clear "$wname_main" redraw
         # Status window is optional (2/2)
         [ -n "$wname_status" ] && zcurses clear "$wname_status" redraw
+    elif [ "$action" = "SUBWIN" ]; then
+        REPLY="$action"
+        reply=( "$list[@]" )
+        break
     fi
 done
 
