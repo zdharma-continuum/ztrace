@@ -308,7 +308,7 @@ while (( 1 )); do
             if [[ "$ts_diff" -lt "${headings_times[$i]}" ]]; then
                 if [ "$last_heading" -ne "$i" ]; then
                     idx+=1
-                    prelist+=( "$headings[i] $idx" )
+                    prelist+=( "$headings[i]" )
                     one_HLIST_NONSELECTABLE_ELEMENTS+=( "$idx" )
                     last_heading=i
                     break
