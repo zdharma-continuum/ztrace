@@ -1,4 +1,4 @@
-autoload zca-usetty-wrapper zca
+autoload ztrace-usetty-wrapper ztrace
 
-zca-usetty-wrapper zca "$@"
+zca-usetty-wrapper ztrace "$@"
 

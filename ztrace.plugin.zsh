@@ -111,3 +111,5 @@ ztstatus() {
 autoload h2-list h2-list-input h2-list-draw
 autoload ztrace ztrace-usetty-wrapper ztrace-widget
 
+zle -N ztrace-widget
+bindkey "^G" ztrace-widget
