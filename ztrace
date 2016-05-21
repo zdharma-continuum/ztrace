@@ -285,15 +285,19 @@ while (( 1 )); do
     integer cur_ts=EPOCHSECONDS ts_diff last_heading=0
     local -a headings headings_times
     local col=$'\x1b[00;32m' rst=$'\x1b[00;00m'
-    headings=( "$col== up to 5 minutes ==$rst" "$col== up to 30 minutes ==$rst" "$col== up to 1 hour ==$rst"
-               "$col== up to 6 hours ==$rst"   "$col== up to 1 day ==$rst"      "$col== More than 1 day ago ==$rst" )
-    headings_times=( $((5*60))                 $((30*60))                       $((60*60))
-                     $((6*3600))               $((24*3600))                     $cur_ts  )
+    headings=(       "" "$col== 5 minutes ==$rst" "$col== 30 minutes ==$rst" "$col== 1 hour ==$rst" "$col== 3 hours ==$rst"
+                        "$col== 6 hours ==$rst"   "$col== 1 day ==$rst"      "$col== 7 days ==$rst" "$col== 30 days ==$rst"
+                        "" )
+    headings_times=( 0  $((5*60))                 $((30*60))                 $((60*60))             $((3*3600))
+                        $((6*3600))               $((24*3600))               $((7*24*3600))         $((30*24*3600))
+                        $cur_ts  )
 
     integer idx=0
 
     one_HLIST_NONSELECTABLE_ELEMENTS=()
 
+    # Iterate to find first heading that's greater
+    # meaning we have to assign previous header
     for trace in "${traces[@]}"; do
         trace="${trace#/tmp/ztrace-}"
         session="${trace%%/*}"
@@ -305,13 +309,19 @@ while (( 1 )); do
 
         ts_diff=$(( cur_ts-ts ))
         integer i
-        for (( i=1; i<=6; i++ )); do
-            if [[ "$ts_diff" -lt "${headings_times[$i]}" ]]; then
-                if [ "$last_heading" -ne "$i" ]; then
-                    idx+=1
-                    prelist+=( "$headings[i]" )
-                    one_HLIST_NONSELECTABLE_ELEMENTS+=( "$idx" )
-                    last_heading=i
+        for (( i=1; i<=10; i++ )); do
+            if [[ "${headings_times[$i]}" -gt "$ts_diff" ]]; then
+                # Selected header
+                integer selh=i-1
+                if [ "$last_heading" -ne "$selh" ]; then
+                    last_heading=selh
+
+                    # Add the heading if it's not empty
+                    if [ -n "$headings[$selh]" ]; then
+                        idx+=1
+                        prelist+=( "$headings[selh]" )
+                        one_HLIST_NONSELECTABLE_ELEMENTS+=( "$idx" )
+                    fi
                 fi
                 break
             fi
