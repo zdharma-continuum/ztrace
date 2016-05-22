@@ -9,8 +9,9 @@ ztstart 3
 
 We inform `Ztrace` to catch output of `3` commands.
 
-Video:
-https://asciinema.org/a/bezp40yelxl0gkxay3pxkgzag
+Video: https://asciinema.org/a/45530
+
+[![asciicast](https://asciinema.org/a/45530.png)](https://asciinema.org/a/45530)
 
 ## IRC Channel
 
