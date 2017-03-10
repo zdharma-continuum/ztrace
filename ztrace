@@ -338,7 +338,7 @@ while (( 1 )); do
 
     # Gather the traces to process and display them
     local -a traces
-    traces=( /tmp/ztrace-*/*(om) )
+    traces=( /tmp/ztrace-*/*(omN) )
     prelist=()
 
     local trace session dtime ts
