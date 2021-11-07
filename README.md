@@ -15,24 +15,24 @@ Video: https://asciinema.org/a/45530
 
 ## Installation
 
-### [Zplugin](https://github.com/psprint/zplugin)
+### [zinit](https://github.com/zdharma-continuum/zinit)
 
-Add `zplugin load psprint/ztrace` to your `.zshrc` file. Zplugin will handle
+Add `zinit load zdharma-continuum/ztrace` to your `.zshrc` file. zinit will handle
 cloning the plugin for you automatically the next time you start zsh.
 
 ### [Antigen](https://github.com/zsh-users/antigen)
 
-Adding `antigen bundle psprint/ztrace` to your .zshrc file. Antigen will handle cloning the plugin for you automatically the next time you start zsh. You can also add the plugin to a running zsh with `antigen bundle psprint/ztrace` for testing before adding it to your `.zshrc`.
+Adding `antigen bundle zdharma-continuum/ztrace` to your .zshrc file. Antigen will handle cloning the plugin for you automatically the next time you start zsh. You can also add the plugin to a running zsh with `antigen bundle psprint/ztrace` for testing before adding it to your `.zshrc`.
 
 ### [Oh-My-Zsh](http://ohmyz.sh/)
 
 1. `cd ~/.oh-my-zsh/custom/plugins`
-2. `git clone git@github.com:psprint/ztrace.git`
+2. `git clone git@github.com:zdharma-continuum/ztrace.git`
 3. Add zsnapshot to your plugin list
 
-### [Zgen](https://github.com/tarjoilija/zgen)
+### [Zgenom](https://github.com/jandamm/zgenom)
 
-Add `zgen load psprint/ztrace` to your .zshrc file in the same function you're doing your other `zgen load` calls in.
+Add `zgenom load zdharma-continuum/ztrace` to your .zshrc file in the same function you're doing your other `zgen load` calls in.
 
 ## More information
 
