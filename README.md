@@ -1,4 +1,4 @@
-## Introduction
+## ztrace [![Gitter][gitter-image]][gitter-link]
 
 `Ztrace` plugin allows to catch output of commands in background.
 By issuing:
@@ -55,10 +55,5 @@ Below are keyboard shortcuts used by `ztrace` command:
 - `Ctrl-D`, `Ctrl-U` - half page up or down
 - `Ctrl-P`, `Ctrl-N` - previous and next (also done with vim's j,k)
 
-## IRC Channel
-
-Channel `#zplugin@freenode` is a support place for all author's projects. Connect to:
-[chat.freenode.net:6697](ircs://chat.freenode.net:6697/%23zplugin) (SSL) or [chat.freenode.net:6667](irc://chat.freenode.net:6667/%23zplugin)
- and join #zplugin.
-
-Following is a quick access via Webchat [![IRC](https://kiwiirc.com/buttons/chat.freenode.net/zplugin.png)](https://kiwiirc.com/client/chat.freenode.net:+6697/#zplugin)
+[gitter-image]: https://badges.gitter.im/zdharma-continuum/community.svg
+[gitter-link]: https://gitter.im/zdharma-continuum/community
