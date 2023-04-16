@@ -1,7 +1,6 @@
 ## ztrace [![Gitter][gitter-image]][gitter-link]
 
-`Ztrace` plugin allows to catch output of commands in background.
-By issuing:
+`Ztrace` plugin allows to catch output of commands in background. By issuing:
 
 ```zsh
 ztstart 3
@@ -17,22 +16,25 @@ Video: https://asciinema.org/a/45530
 
 ### [zinit](https://github.com/zdharma-continuum/zinit)
 
-Add `zinit load zdharma-continuum/ztrace` to your `.zshrc` file. zinit will handle
-cloning the plugin for you automatically the next time you start zsh.
+Add `zinit load zdharma-continuum/ztrace` to your `.zshrc` file. zinit will handle cloning the plugin for you
+automatically the next time you start zsh.
 
 ### [Antigen](https://github.com/zsh-users/antigen)
 
-Adding `antigen bundle zdharma-continuum/ztrace` to your .zshrc file. Antigen will handle cloning the plugin for you automatically the next time you start zsh. You can also add the plugin to a running zsh with `antigen bundle psprint/ztrace` for testing before adding it to your `.zshrc`.
+Adding `antigen bundle zdharma-continuum/ztrace` to your .zshrc file. Antigen will handle cloning the plugin for you
+automatically the next time you start zsh. You can also add the plugin to a running zsh with
+`antigen bundle psprint/ztrace` for testing before adding it to your `.zshrc`.
 
 ### [Oh-My-Zsh](http://ohmyz.sh/)
 
 1. `cd ~/.oh-my-zsh/custom/plugins`
-2. `git clone git@github.com:zdharma-continuum/ztrace.git`
-3. Add zsnapshot to your plugin list
+1. `git clone git@github.com:zdharma-continuum/ztrace.git`
+1. Add zsnapshot to your plugin list
 
 ### [Zgenom](https://github.com/jandamm/zgenom)
 
-Add `zgenom load zdharma-continuum/ztrace` to your .zshrc file in the same function you're doing your other `zgen load` calls in.
+Add `zgenom load zdharma-continuum/ztrace` to your .zshrc file in the same function you're doing your other `zgen load`
+calls in.
 
 ## More information
 
