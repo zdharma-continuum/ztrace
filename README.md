@@ -29,7 +29,7 @@ automatically the next time you start zsh. You can also add the plugin to a runn
 
 1. `cd ~/.oh-my-zsh/custom/plugins`
 1. `git clone git@github.com:zdharma-continuum/ztrace.git`
-1. Add zsnapshot to your plugin list
+1. Add ztrace to your plugin list
 
 ### [Zgenom](https://github.com/jandamm/zgenom)
 
